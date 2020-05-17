@@ -1,17 +1,14 @@
 import express from 'express'
 import graphqlHttp from 'express-graphql';
 import graphqlSchema from './graphql/schema';
-import GraphqlResolver from "./graphql/resolvers/game/GameResolver";
-import {GameService} from "./services/game/GameService";
-import InMemoryGameRepository from "./data/game/GameRespository";
-import {IGameRepository} from "./data/game/IGameRepository";
+import { container } from "./di/inversify.config";
+import {TYPES} from "./di/types";
+import {IGraphqlResolver} from "./graphql/resolvers/resolvers";
 
 
 const app = express();
 
-const gameRepository:IGameRepository = new InMemoryGameRepository()
-const gameService = new GameService(gameRepository)
-const resolver = new GraphqlResolver(gameService)
+const resolver = container.get<IGraphqlResolver>(TYPES.IGraphqlResolver);
 
 app.use('/graphql', graphqlHttp({
     schema: graphqlSchema,

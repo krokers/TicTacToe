@@ -1,6 +1,9 @@
+import { injectable } from "inversify";
+import "reflect-metadata";
 import {GameData, IGameRepository} from "./IGameRepository";
 import {v4 as uuid} from 'uuid'
 
+@injectable()
 class InMemoryGameRepository implements IGameRepository {
     games = new Map<string, GameData>()
 

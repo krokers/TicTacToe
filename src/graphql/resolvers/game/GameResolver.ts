@@ -1,14 +1,17 @@
+import { injectable, inject } from "inversify";
+import "reflect-metadata";
 import {Game, GameConfigInput, IGraphqlResolver} from "../resolvers";
 import {GameService} from "../../../services/game/GameService";
 import {HttpError} from "../../../utils/HttpError";
 import {GameTypes} from "../../../data/game/IGameRepository";
 import SINGLE_PLAYER = GameTypes.SINGLE_PLAYER;
 import MULTI_PLAYER = GameTypes.MULTI_PLAYER;
+import {TYPES} from "../../../di/types";
 
+@injectable()
 class GraphqlResolver implements IGraphqlResolver {
 
-
-    constructor(private gameService: GameService) {
+    constructor(@inject(TYPES.GameService) private gameService: GameService) {
     }
 
     async createGame(gameConfig: GameConfigInput, request: any): Promise<Game> {
