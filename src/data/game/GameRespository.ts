@@ -20,6 +20,11 @@ class InMemoryGameRepository implements IGameRepository {
     findAll(): Promise<GameData[]> {
         return Promise.resolve(Array.from(this.games.values()));
     }
+
+    update(game:GameData): Promise<GameData> {
+        this.games.set(game._id, game);
+        return Promise.resolve(game);
+    }
 }
 
 export default InMemoryGameRepository

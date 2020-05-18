@@ -1,4 +1,4 @@
-import { injectable, inject } from "inversify";
+import {inject, injectable} from "inversify";
 import "reflect-metadata";
 import {GameData, IGameRepository} from "../../data/game/IGameRepository";
 import {IGameService} from "./IGameService";
@@ -23,8 +23,18 @@ export class GameService implements IGameService{
         if (!game) {
             throw new HttpError(`Game with id '${gameId}' not found!`, 404)
         }
-        //TODO: validate player and set ready state.
-        return game;
+
+        switch (player) {
+            case PlayerTypes.PLAYER_O:
+                game.playerOReady = true;
+                break;
+            case PlayerTypes.PLAYER_X:
+                game.playerXReady = true;
+                break;
+        }
+        const updatedGame = await this.gameRepository.update(game);
+        this.historyRepository.addEntry(ActionType.PlayerSetReady, gameId, `Player ${player} is ready `, player);
+        return updatedGame;
     }
 
     getGames(): Promise<GameData[]>{

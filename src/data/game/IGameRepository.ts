@@ -13,4 +13,6 @@ export interface IGameRepository {
     findById(id: string): Promise<GameData | undefined>
 
     findAll(): Promise<GameData[]>
+
+    update(game:GameData): Promise<GameData>;
 }
