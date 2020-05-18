@@ -16,10 +16,16 @@ const schema = buildSchema(`
         player:String!
     }
     
+    input MoveInput {
+        gameId:String!
+        player:String!
+        position: Int!
+    }
     
     type RootMutation {
         createGame(config: GameConfigInput!): Game!
         setReady(setReady: SetReadyInput!): Game!
+        makeMove(move: MoveInput!): Game!
     }
 
     type RootQuery {

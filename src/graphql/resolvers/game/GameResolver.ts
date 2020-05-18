@@ -1,6 +1,6 @@
 import {inject, injectable} from "inversify";
 import "reflect-metadata";
-import {Game, GameConfigInput, GameTypes, IGraphqlResolver, PlayerTypes, SetReadyInput} from "../resolvers";
+import {Game, GameConfigInput, GameTypes, IGraphqlResolver, MoveInput, PlayerTypes, SetReadyInput} from "../resolvers";
 import {HttpError} from "../../../utils/HttpError";
 import {TYPES} from "../../../di/types";
 import {ILogger} from "../../../utils/logger/ILogger";
@@ -40,6 +40,10 @@ class GraphqlResolver implements IGraphqlResolver {
 
     async getGames(): Promise<Game[]> {
         return (await this.gameService.getGames()).map(Game.from)
+    }
+
+    makeMove({move}: { move: MoveInput }, request: any): Promise<Game> {
+        return Promise.resolve(new Game("",""));
     }
 }
 

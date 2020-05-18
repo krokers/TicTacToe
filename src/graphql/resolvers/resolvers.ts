@@ -19,6 +19,12 @@ export interface SetReadyInput {
     player: PlayerTypes;
 }
 
+export interface MoveInput {
+    gameId: string;
+    player: PlayerTypes;
+    position: number;
+}
+
 export class Game {
 
     constructor(public _id: string, public gameType: string) {
@@ -32,6 +38,7 @@ export class Game {
 export interface IGraphqlResolver {
     createGame: ({config}:{config:GameConfigInput}, request: any) => Promise<Game>;
     setReady: ({setReady}:{setReady:SetReadyInput}, request: any) => Promise<Game>;
+    makeMove: ({move}: {move:MoveInput}, request: any) => Promise<Game>
 
     hello: () => string;
     getGames(): Promise<Game[]>;
