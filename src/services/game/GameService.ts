@@ -37,7 +37,9 @@ export class GameService implements IGameService {
         }
         if (game.playerOReady && game.playerXReady) {
             game.nextPlayer = Math.random() > 0.5 ? PlayerTypes.PLAYER_O : PlayerTypes.PLAYER_X;
-            this.historyRepository.addEntry(ActionType.SelectedFirstPlayer, gameId, `Player ${game.nextPlayer} is picked as first player`);
+            const message = `Player ${game.nextPlayer} is picked as first player`;
+            this.log.v(message);
+            this.historyRepository.addEntry(ActionType.SelectedFirstPlayer, gameId, message);
         }
         const updatedGame = await this.gameRepository.update(game);
         this.historyRepository.addEntry(ActionType.PlayerSetReady, gameId, `Player ${player} is ready `, player);
@@ -54,7 +56,7 @@ export class GameService implements IGameService {
             throw new HttpError(`Game with id '${gameId}' not found!`, 404)
         }
         const game = {...repoGame};
-        this.log.v("Making move for game: ", game);
+
         if (!(game.playerXReady && game.playerOReady)) {
             throw  new HttpError("Both players must be ready to make a move!", 412);
         }
