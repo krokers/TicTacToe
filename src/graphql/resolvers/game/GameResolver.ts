@@ -1,12 +1,12 @@
-import { injectable, inject } from "inversify";
+import {inject, injectable} from "inversify";
 import "reflect-metadata";
-import {Game, GameConfigInput, IGraphqlResolver} from "../resolvers";
+import {Game, GameConfigInput, IGraphqlResolver, SetReadyInput} from "../resolvers";
 import {GameService} from "../../../services/game/GameService";
 import {HttpError} from "../../../utils/HttpError";
 import {GameTypes} from "../../../data/game/IGameRepository";
+import {TYPES} from "../../../di/types";
 import SINGLE_PLAYER = GameTypes.SINGLE_PLAYER;
 import MULTI_PLAYER = GameTypes.MULTI_PLAYER;
-import {TYPES} from "../../../di/types";
 
 @injectable()
 class GraphqlResolver implements IGraphqlResolver {
@@ -14,16 +14,18 @@ class GraphqlResolver implements IGraphqlResolver {
     constructor(@inject(TYPES.GameService) private gameService: GameService) {
     }
 
-    async createGame(gameConfig: GameConfigInput, request: any): Promise<Game> {
-        console.log("Creating new game: ", gameConfig);
+    async createGame({config}: {config:GameConfigInput}, request: any): Promise<Game> {
 
-        if (!(gameConfig.gameType === SINGLE_PLAYER || gameConfig.gameType === MULTI_PLAYER)) {
+        if (!(config.gameType === SINGLE_PLAYER || config.gameType === MULTI_PLAYER)) {
             throw new HttpError(`Unknown game type. Allowed types are ${SINGLE_PLAYER} or ${MULTI_PLAYER}`, 422);
         }
 
-        const gameData = await this.gameService.createGame(gameConfig.gameType);
-        console.log("Created game: ", gameData);
+        const gameData = await this.gameService.createGame(config.gameType);
         return Game.from(gameData);
+    }
+
+    setReady({setReady}: {setReady:SetReadyInput}, request: any): Promise<Game> {
+        return this.gameService.setPlayerReady(setReady.gameId, setReady.player);
     }
 
     hello(): string {

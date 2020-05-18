@@ -11,8 +11,15 @@ const schema = buildSchema(`
         gameType: String!
     }
     
+    input SetReadyInput {
+        gameId:String!
+        player:String!
+    }
+    
+    
     type RootMutation {
-        createGame(gameType: String!): Game! 
+        createGame(config: GameConfigInput!): Game!
+        setReady(setPlayerReady: SetReadyInput!): Game!
     }
 
     type RootQuery {
