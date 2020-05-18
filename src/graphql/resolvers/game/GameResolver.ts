@@ -43,7 +43,8 @@ class GraphqlResolver implements IGraphqlResolver {
     makeMove({move}: { move: MoveInput }, request: any): Promise<Game> {
         this.validatePlayer(move.player);
         this.validatePosition(move.position);
-        return Promise.resolve(new Game("",""));
+        this.log.v(`Making move. Player: ${move.player} position: ${move.position} gameId: ${move.gameId}` )
+        return this.gameService.makeMove(move.gameId, move.player, move.position);
     }
 
     private validatePlayer(player:PlayerTypes):boolean {
