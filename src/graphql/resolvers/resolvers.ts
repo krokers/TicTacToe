@@ -1,7 +1,12 @@
 import {GameData} from "../../data/game/IGameRepository";
 
+export enum GameTypes {
+    SINGLE_PLAYER = 'singleplayer',
+    MULTI_PLAYER = 'multiplayer',
+}
+
 export interface GameConfigInput {
-    gameType: string;
+    gameType: GameTypes;
 }
 
 export interface SetReadyInput {

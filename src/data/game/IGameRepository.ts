@@ -7,11 +7,6 @@ export class GameData {
     }
 }
 
-export module GameTypes {
-    export var SINGLE_PLAYER: string = 'singleplayer';
-    export var MULTI_PLAYER: string = 'multiplayer';
-}
-
 export interface IGameRepository {
     create(type: string): Promise<GameData>;
 
