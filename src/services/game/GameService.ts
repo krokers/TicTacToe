@@ -65,11 +65,10 @@ export class GameService implements IGameService {
             throw  new HttpError(`Position ${position} is already taken!`, 412);
         }
         const nextPlayer = player === PlayerTypes.PLAYER_X ? PlayerTypes.PLAYER_O : PlayerTypes.PLAYER_X;
-
         game.selections[position] = player;
         game.nextPlayer = nextPlayer;
 
-        const updatedGame = await this.gameRepository.update(repoGame);
+        const updatedGame = await this.gameRepository.update(game);
         this.historyRepository.addEntry(ActionType.PlayerMove, updatedGame._id,
             `Player ${player} made a check on position ${position}`, gameId, player, "" + position)
         return Promise.resolve(updatedGame);
