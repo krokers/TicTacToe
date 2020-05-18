@@ -19,7 +19,7 @@ const schema = buildSchema(`
     
     type RootMutation {
         createGame(config: GameConfigInput!): Game!
-        setReady(setPlayerReady: SetReadyInput!): Game!
+        setReady(setReady: SetReadyInput!): Game!
     }
 
     type RootQuery {
