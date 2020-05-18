@@ -27,9 +27,8 @@ class GraphqlResolver implements IGraphqlResolver {
     }
 
     setReady({setReady}: {setReady:SetReadyInput}, request: any): Promise<Game> {
-        if (Object.values(PlayerTypes).includes(setReady.player)) {
-            throw new HttpError(`Incorrect player type. Allowed types are 
-            ${keysAsString(PlayerTypes, ', ')}`, 412)
+        if (!Object.values(PlayerTypes).includes(setReady.player)) {
+            throw new HttpError(`Incorrect player type. Allowed types are ${keysAsString(PlayerTypes, ', ')}`, 412)
         }
         this.log.v("Setting player %s ready for game %s", setReady.player, setReady.gameId);
         return this.gameService.setPlayerReady(setReady.gameId, setReady.player);
