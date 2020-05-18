@@ -5,13 +5,17 @@ import {IGameService} from "./IGameService";
 import {TYPES} from "../../di/types";
 import {HttpError} from "../../utils/HttpError";
 import {PlayerTypes} from "../../graphql/resolvers/resolvers";
+import {ActionType, IHistoryRepository} from "../../data/history/IHistoryRepository";
 
 @injectable()
 export class GameService implements IGameService{
-    constructor(@inject(TYPES.GameRepository) private gameRepository: IGameRepository) {}
+    constructor(@inject(TYPES.GameRepository) private gameRepository: IGameRepository,
+                @inject(TYPES.HistoryRepository) private historyRepository: IHistoryRepository) {}
 
-    createGame(gameType: string):Promise<GameData> {
-        return this.gameRepository.create(gameType);
+    async createGame(gameType: string): Promise<GameData> {
+        const game = await this.gameRepository.create(gameType);
+        this.historyRepository.addEntry(ActionType.GameCreated, game._id, "New Game Created");
+        return game;
     }
 
     async setPlayerReady(gameId: string, player: PlayerTypes): Promise<GameData> {

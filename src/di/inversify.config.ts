@@ -8,9 +8,12 @@ import {IGraphqlResolver} from "../graphql/resolvers/resolvers";
 import GraphqlResolver from "../graphql/resolvers/game/GameResolver";
 import {ILogger} from "../utils/logger/ILogger";
 import {WinstonLogger} from "../utils/logger/WinstonLogger";
+import {IHistoryRepository} from "../data/history/IHistoryRepository";
+import {InMemoryHistoryRepository} from "../data/history/InMemoryHistoryRepository";
 
 const container = new Container();
 container.bind<IGameRepository>(TYPES.GameRepository).to(InMemoryGameRepository);
+container.bind<IHistoryRepository>(TYPES.HistoryRepository).to(InMemoryHistoryRepository)
 container.bind<IGameService>(TYPES.GameService).to(GameService);
 container.bind<IGraphqlResolver>(TYPES.IGraphqlResolver).to(GraphqlResolver);
 container.bind<ILogger>(TYPES.Logger).to(WinstonLogger);
