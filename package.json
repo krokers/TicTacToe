@@ -22,11 +22,13 @@
     "@types/inversify": "^2.0.33",
     "@types/reflect-metadata": "^0.1.0",
     "@types/uuid": "^7.0.3",
+    "@types/winston": "^2.4.4",
     "express": "^4.17.1",
     "express-graphql": "^0.9.0",
     "graphql": "^15.0.0",
     "inversify": "^5.0.1",
     "reflect-metadata": "^0.1.13",
-    "uuid": "^8.0.0"
+    "uuid": "^8.0.0",
+    "winston": "^3.2.1"
   }
 }
