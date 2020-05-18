@@ -27,9 +27,7 @@ class GraphqlResolver implements IGraphqlResolver {
     }
 
     setReady({setReady}: {setReady:SetReadyInput}, request: any): Promise<Game> {
-        if (!Object.values(PlayerTypes).includes(setReady.player)) {
-            throw new HttpError(`Incorrect player type. Allowed types are ${keysAsString(PlayerTypes, ', ')}`, 412)
-        }
+        this.validatePlayer(setReady.player);
         this.log.v("Setting player %s ready for game %s", setReady.player, setReady.gameId);
         return this.gameService.setPlayerReady(setReady.gameId, setReady.player);
     }
@@ -43,7 +41,23 @@ class GraphqlResolver implements IGraphqlResolver {
     }
 
     makeMove({move}: { move: MoveInput }, request: any): Promise<Game> {
+        this.validatePlayer(move.player);
+        this.validatePosition(move.position);
         return Promise.resolve(new Game("",""));
+    }
+
+    private validatePlayer(player:PlayerTypes):boolean {
+        if (!Object.values(PlayerTypes).includes(player)) {
+            throw new HttpError(`Incorrect player type. Allowed types are ${keysAsString(PlayerTypes, ', ')}`, 412)
+        }
+        return true;
+    }
+
+    private validatePosition(position: number):boolean {
+        if (position<0 || position > 8) {
+            throw new HttpError(`Incorrect position to check. Must be a value between 0-8`, 412)
+        }
+        return true;
     }
 }
 

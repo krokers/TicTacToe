@@ -1,6 +1,7 @@
 export enum ActionType {
     GameCreated= "GameCreated",
     PlayerSetReady= "PlayerSetReady",
+    PlayerMove= "PlayerMove",
 }
 
 export interface IHistoryRepository {

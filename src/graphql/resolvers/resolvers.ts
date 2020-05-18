@@ -8,6 +8,7 @@ export enum GameTypes {
 export enum PlayerTypes {
     PLAYER_X = 'X',
     PLAYER_O = 'O',
+    PLAYER_NONE = 'E',
 }
 
 export interface GameConfigInput {
