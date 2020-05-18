@@ -8,7 +8,7 @@ class InMemoryGameRepository implements IGameRepository {
     games = new Map<string, GameData>()
 
     create(type: string): Promise<GameData> {
-        const game = new GameData(uuid(), type);
+        const game = new GameData(""+this.games.size, type);
         this.games.set(game._id, game);
         return Promise.resolve(game);
     }
