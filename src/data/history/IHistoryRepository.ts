@@ -3,6 +3,7 @@ export enum ActionType {
     PlayerSetReady= "PlayerSetReady",
     SelectedFirstPlayer= "SelectedFirstPlayer",
     PlayerMove= "PlayerMove",
+    GameOver= "GameOver",
 }
 
 export interface IHistoryRepository {

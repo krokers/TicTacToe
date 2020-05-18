@@ -55,7 +55,8 @@ export class GameService implements IGameService {
         if (!repoGame) {
             throw new HttpError(`Game with id '${gameId}' not found!`, 404)
         }
-        const game = {...repoGame};
+        const game = {
+            ...repoGame};
 
         if (!(game.playerXReady && game.playerOReady)) {
             throw  new HttpError("Both players must be ready to make a move!", 412);
@@ -70,9 +71,47 @@ export class GameService implements IGameService {
         game.selections[position] = player;
         game.nextPlayer = nextPlayer;
 
+        const winner: PlayerTypes = this.checkWinner(game)
+        if (winner !== PlayerTypes.PLAYER_NONE) {
+            game.ended = true;
+            game.winner = winner;
+            const message = `Player ${winner} won!`
+            this.log.v(message);
+            this.historyRepository.addEntry(ActionType.SelectedFirstPlayer, game._id, message, winner );
+        }
+
+        //TODO: check game over (all fields selected)
+
         const updatedGame = await this.gameRepository.update(game);
         this.historyRepository.addEntry(ActionType.PlayerMove, updatedGame._id,
             `Player ${player} made a check on position ${position}`, gameId, player, "" + position)
         return Promise.resolve(updatedGame);
+    }
+
+    /**
+     * Return {PlayerTypes#PLAYER_NONE} if there is no winner, or winning player.
+     * @param game
+     */
+    private checkWinner(game: GameData): PlayerTypes {
+        this.log.v("Checking for winner: ", game.selections);
+        const winner = Object.values(PlayerTypes)
+            .filter(p => p !== PlayerTypes.PLAYER_NONE)
+            .reduce( (currentWinner, player) => {
+                const p = player.toString();
+                if (
+                    (game.selections[0] === p && game.selections[1] === p && game.selections[2] === p) ||
+                    (game.selections[3] === p && game.selections[4] === p && game.selections[5] === p) ||
+                    (game.selections[6] === p && game.selections[7] === p && game.selections[8] === p) ||
+                    (game.selections[0] === p && game.selections[3] === p && game.selections[6] === p) ||
+                    (game.selections[1] === p && game.selections[4] === p && game.selections[7] === p) ||
+                    (game.selections[2] === p && game.selections[5] === p && game.selections[8] === p) ||
+                    (game.selections[0] === p && game.selections[4] === p && game.selections[8] === p) ||
+                    (game.selections[2] === p && game.selections[4] === p && game.selections[6] === p)
+                ) {
+                    return player;
+                }
+                return PlayerTypes.PLAYER_NONE;
+            }, PlayerTypes.PLAYER_NONE)
+        return winner;
     }
 }

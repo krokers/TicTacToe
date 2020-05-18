@@ -4,7 +4,9 @@ export class GameData {
     selections: Array<string> = ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'];
     playerXReady: boolean = false;
     playerOReady: boolean = false;
+    ended: boolean = false;
     nextPlayer:PlayerTypes = PlayerTypes.PLAYER_NONE;
+    winner: PlayerTypes = PlayerTypes.PLAYER_NONE;
 
     constructor(public _id: string, public gameType: string) {
     }
