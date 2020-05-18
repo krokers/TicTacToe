@@ -4,6 +4,7 @@ import {GameData, IGameRepository} from "../../data/game/IGameRepository";
 import {IGameService} from "./IGameService";
 import {TYPES} from "../../di/types";
 import {HttpError} from "../../utils/HttpError";
+import {PlayerTypes} from "../../graphql/resolvers/resolvers";
 
 @injectable()
 export class GameService implements IGameService{
@@ -13,7 +14,7 @@ export class GameService implements IGameService{
         return this.gameRepository.create(gameType);
     }
 
-    async setPlayerReady(gameId: string, player: string): Promise<GameData> {
+    async setPlayerReady(gameId: string, player: PlayerTypes): Promise<GameData> {
         const game = await this.gameRepository.findById(gameId);
         if (!game) {
             throw new HttpError(`Game with id '${gameId}' not found!`, 404)

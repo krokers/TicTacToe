@@ -5,13 +5,18 @@ export enum GameTypes {
     MULTI_PLAYER = 'multiplayer',
 }
 
+export enum PlayerTypes {
+    PLAYER_X = 'X',
+    PLAYER_O = 'O',
+}
+
 export interface GameConfigInput {
     gameType: GameTypes;
 }
 
 export interface SetReadyInput {
     gameId: string;
-    player: string; //"X", "O"
+    player: PlayerTypes;
 }
 
 export class Game {
