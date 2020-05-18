@@ -16,7 +16,7 @@ export class GameService implements IGameService{
     async setPlayerReady(gameId: string, player: string): Promise<GameData> {
         const game = await this.gameRepository.findById(gameId);
         if (!game) {
-            throw new HttpError(`Game with id  ${gameId} found!`, 404)
+            throw new HttpError(`Game with id '${gameId}' not found!`, 404)
         }
         //TODO: validate player and set ready state.
         return game;

@@ -27,6 +27,7 @@ class GraphqlResolver implements IGraphqlResolver {
     }
 
     setReady({setReady}: {setReady:SetReadyInput}, request: any): Promise<Game> {
+        this.log.v("Setting player %s ready for game %s", setReady.player, setReady.gameId);
         return this.gameService.setPlayerReady(setReady.gameId, setReady.player);
     }
 
