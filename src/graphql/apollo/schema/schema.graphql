@@ -2,8 +2,14 @@ type Query {
     helloWorld: String!
 }
 
+input SetReadyInput {
+    gameId:String!
+    player:String!
+}
+
 type Mutation {
     createGame (config: GameConfigInput!): Game!
+    setReady(setReady: SetReadyInput!): Game!
 }
 
 type Subscription {
