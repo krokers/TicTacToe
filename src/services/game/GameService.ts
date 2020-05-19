@@ -17,6 +17,7 @@ export class GameService implements IGameService {
 
     async createGame(gameType: string): Promise<GameData> {
         const game = await this.gameRepository.create(gameType);
+        this.log.v(`Creating new ${gameType} game.`);
         this.historyRepository.addEntry(ActionType.GameCreated, game._id, "New Game Created");
         return game;
     }

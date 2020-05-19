@@ -1,0 +1,16 @@
+type Query {
+    helloWorld: String!
+}
+
+type Mutation {
+    createGame (config: GameConfigInput!): Game!
+}
+
+type Game {
+    _id: ID!
+    gameType: String!
+}
+
+input GameConfigInput {
+    gameType: String!
+}

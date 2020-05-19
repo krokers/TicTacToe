@@ -36,6 +36,8 @@ export class Game {
     }
 }
 
+export const GAME_UPDATED_TOPIC = 'gameUpdated';
+
 export interface IGraphqlResolver {
     createGame: ({config}:{config:GameConfigInput}, request: any) => Promise<Game>;
     setReady: ({setReady}:{setReady:SetReadyInput}, request: any) => Promise<Game>;
@@ -43,4 +45,8 @@ export interface IGraphqlResolver {
 
     hello: () => string;
     getGames(): Promise<Game[]>;
+
+    gameUpdated: {
+        subscribe: () =>  AsyncIterator<Game>
+    }
 }
