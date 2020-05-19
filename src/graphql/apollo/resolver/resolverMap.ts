@@ -1,19 +1,19 @@
 import {IResolvers} from 'graphql-tools';
-import {Game, GAME_UPDATED_TOPIC, GameConfigInput, GameTypes, SetReadyInput} from "../../resolvers/resolvers";
 import {HttpError} from "../../../utils/HttpError";
 import {keysAsString} from "../../../utils/TextUtils";
 import {IGameService} from "../../../services/game/IGameService";
-import {injectable, inject} from "inversify";
+import {inject, injectable} from "inversify";
 import {TYPES} from "../../../di/types";
-import { PubSub, withFilter } from 'apollo-server-express';
+import {PubSub, withFilter} from 'apollo-server-express';
 import {ILogger} from "../../../utils/logger/ILogger";
 import {IInputValidators} from "../../../services/validators/IInputValidators";
+import {Game, GameConfigInput, GameTypes, SetReadyInput} from "../data/data";
 
 const PLAYER_READY = 'PLAYER_READY';
 
 @injectable()
 class GameResolvers {
-    pubsub:PubSub;
+    pubsub: PubSub;
 
     constructor(@inject(TYPES.GameService) private gameService: IGameService,
                 @inject(TYPES.Logger) private log: ILogger,
@@ -25,7 +25,7 @@ class GameResolvers {
 
         const resolverMap: IResolvers = {
             Query: {
-                helloWorld: (_: void, args: void): string =>{
+                helloWorld: (_: void, args: void): string => {
                     return `Hello world!` + this.gameService;
                 },
             },
@@ -37,7 +37,6 @@ class GameResolvers {
                     }
 
                     const gameData = await this.gameService.createGame(config.gameType);
-                    this.log.v(`About to publish subscription event. pubsub: ${this.pubsub}`)
                     return Promise.resolve(Game.from(gameData));
                 },
                 setReady: async (parent: any, {setReady}: { setReady: SetReadyInput }) => {
@@ -53,8 +52,8 @@ class GameResolvers {
             Subscription: {
                 playerReady: {
                     subscribe: withFilter(
-                        (gameId:string) => this.pubsub.asyncIterator([PLAYER_READY]),
-                        ({playerReady}:{playerReady:Game}, {gameId}:{gameId:string}) => playerReady._id === gameId
+                        (gameId: string) => this.pubsub.asyncIterator([PLAYER_READY]),
+                        ({playerReady}: { playerReady: Game }, {gameId}: { gameId: string }) => playerReady._id === gameId
                     )
                 }
             }

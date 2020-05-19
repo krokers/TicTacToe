@@ -1,9 +1,9 @@
 import {IInputValidators} from "./IInputValidators";
-import {PlayerTypes} from "../../graphql/resolvers/resolvers";
 import {HttpError} from "../../utils/HttpError";
 import {keysAsString} from "../../utils/TextUtils";
 import {inject, injectable} from "inversify";
 import "reflect-metadata";
+import {PlayerTypes} from "../../graphql/apollo/data/data";
 
 @injectable()
 export class InputValidators implements IInputValidators{
