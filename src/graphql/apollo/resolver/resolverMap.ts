@@ -5,11 +5,18 @@ import {keysAsString} from "../../../utils/TextUtils";
 import {IGameService} from "../../../services/game/IGameService";
 import {injectable, inject} from "inversify";
 import {TYPES} from "../../../di/types";
+import { PubSub } from 'apollo-server-express';
+import {ILogger} from "../../../utils/logger/ILogger";
+
+const PLAYER_READY = 'PLAYER_READY';
 
 @injectable()
 class GameResolvers {
+    pubsub:PubSub;
 
-    constructor(@inject(TYPES.GameService) private gameService: IGameService) {
+    constructor(@inject(TYPES.GameService) private gameService: IGameService,
+                @inject(TYPES.Logger) private log: ILogger) {
+        this.pubsub = new PubSub(); // TODO Inject
     }
 
     getResolvers() {
@@ -28,7 +35,14 @@ class GameResolvers {
                     }
 
                     const gameData = await this.gameService.createGame(config.gameType);
+                    this.log.v(`About to publish subscription event. pubsub: ${this.pubsub}`)
+                    await this.pubsub.publish(PLAYER_READY, { playerReady: "test" });
                     return Promise.resolve(Game.from(gameData));
+                }
+            },
+            Subscription: {
+                playerReady: {
+                    subscribe: () => this.pubsub.asyncIterator([PLAYER_READY]),
                 }
             }
         };

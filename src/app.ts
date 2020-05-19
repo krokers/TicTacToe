@@ -2,10 +2,15 @@ import express from 'express'
 import {container} from "./di/inversify.config";
 import {TYPES} from "./di/types";
 import {ILogger} from "./utils/logger/ILogger";
-import {ApolloServer} from "apollo-server-express";
+import {ApolloServer, PubSub} from "apollo-server-express";
 import { createServer } from 'http';
 import schema from "./graphql/apollo/schema"
+import { SubscriptionServer } from 'subscriptions-transport-ws';
+import {graphqlExpress} from "apollo-server-express/dist/expressApollo";
+import bodyParser from 'body-parser';
+import { execute, subscribe } from 'graphql';
 
+const PORT = 3000;
 class App {
 
     constructor(private log: ILogger) {
@@ -13,15 +18,49 @@ class App {
 
     initialize() {
 
-        // const resolvers = container.get<IGraphqlResolver>(TYPES.IGraphqlResolver);
+        // const app = express();
+        //
+        // app.use('/graphql', bodyParser.json(), graphqlExpress({ schema: schema }));
+        //
+        // const pubsub = new PubSub();
+        // const server = createServer(app);
+        //
+        // server.listen(PORT, () => {
+        //     new SubscriptionServer({
+        //         execute,
+        //         subscribe,
+        //         schema: schema,
+        //     }, {
+        //         server: server,
+        //         path: '/subscriptions',
+        //     });
+        // });
+
+
         const app = express();
 
-        const server = new ApolloServer({schema});
+        const server = new ApolloServer({schema,
+            subscriptions: {
+                onConnect: (connectionParams, webSocket, context) => {
+                    this.log.v(`Client connected! connectionParams: ${connectionParams}`);
+                },
+                onDisconnect: (webSocket, context) => {
+                    this.log.v("Client disconnected!");
+                },
+            },
+        });
         server.applyMiddleware({ app, path: '/graphql' });
         const httpServer = createServer(app);
+        server.installSubscriptionHandlers(httpServer);
         httpServer.listen(
-            { port: 3000 },
-            (): void => this.log.v(`GraphQL is now running on http://localhost:3000/graphql`));
+            { port: PORT },
+            (): void => {
+                this.log.v(`Server ready at http://localhost:${PORT}${server.graphqlPath}`)
+                this.log.v(`Subscriptions ready at ws://localhost:${PORT}${server.subscriptionsPath}`)
+            });
+
+
+
 
         //
         // const subscriptionsEndpoint = `ws://localhost:${8181}/subscriptions`;

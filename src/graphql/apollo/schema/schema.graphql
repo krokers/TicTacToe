@@ -6,6 +6,11 @@ type Mutation {
     createGame (config: GameConfigInput!): Game!
 }
 
+type Subscription {
+    playerReady: String!
+#    playerReady(value: String!): Game!
+}
+
 type Game {
     _id: ID!
     gameType: String!
