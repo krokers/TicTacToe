@@ -5,6 +5,9 @@ export enum GameTypes {
     MULTI_PLAYER = 'multiplayer',
 }
 
+export const SUBSCRIPTION_PLAYER_READY = 'PLAYER_READY';
+export const SUBSCRIPTION_PLAYER_MOVE = 'PLAYER_MOVE';
+
 export enum PlayerTypes {
     PLAYER_X = 'X',
     PLAYER_O = 'O',

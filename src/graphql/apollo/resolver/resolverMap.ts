@@ -7,9 +7,15 @@ import {TYPES} from "../../../di/types";
 import {PubSub, withFilter} from 'apollo-server-express';
 import {ILogger} from "../../../utils/logger/ILogger";
 import {IInputValidators} from "../../../services/validators/IInputValidators";
-import {Game, GameConfigInput, GameTypes, SetReadyInput} from "../data/data";
-
-const PLAYER_READY = 'PLAYER_READY';
+import {
+    Game,
+    GameConfigInput,
+    GameTypes,
+    MoveInput,
+    SetReadyInput,
+    SUBSCRIPTION_PLAYER_READY,
+    SubscriptionType
+} from "../data/data";
 
 @injectable()
 class GameResolvers {
@@ -39,20 +45,29 @@ class GameResolvers {
                     const gameData = await this.gameService.createGame(config.gameType);
                     return Promise.resolve(Game.from(gameData));
                 },
+
                 setReady: async (parent: any, {setReady}: { setReady: SetReadyInput }) => {
                     this.inputValidators.validatePlayer(setReady.player);
                     this.log.v("Setting player %s ready for game %s", setReady.player, setReady.gameId);
                     const gameData = await this.gameService.setPlayerReady(setReady.gameId, setReady.player);
                     const game = Game.from(gameData);
-                    await this.pubsub.publish(PLAYER_READY, {playerReady: game});
+                    await this.pubsub.publish(SUBSCRIPTION_PLAYER_READY, {playerReady: game});
                     return game;
+                },
+
+                makeMove: async (parent: any, {move}: { move: MoveInput }, request: any): Promise<Game> => {
+                    this.inputValidators.validatePlayer(move.player);
+                    this.inputValidators.validatePosition(move.position);
+                    this.log.v(`Making move. Player: ${move.player} position: ${move.position} gameId: ${move.gameId}`)
+                    //todo: add subscription!
+                    return this.gameService.makeMove(move.gameId, move.player, move.position);
                 }
 
             },
             Subscription: {
                 playerReady: {
                     subscribe: withFilter(
-                        (gameId: string) => this.pubsub.asyncIterator([PLAYER_READY]),
+                        (gameId: string) => this.pubsub.asyncIterator([SUBSCRIPTION_PLAYER_READY]),
                         ({playerReady}: { playerReady: Game }, {gameId}: { gameId: string }) => playerReady._id === gameId
                     )
                 }
