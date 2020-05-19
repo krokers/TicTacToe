@@ -1,4 +1,3 @@
-// schema.ts
 import 'graphql-import-node';
 import * as typeDefs from './schema/schema.graphql';
 import { makeExecutableSchema } from 'graphql-tools';
@@ -9,6 +8,6 @@ import {TYPES} from "../../di/types";
 
 const schema: GraphQLSchema = makeExecutableSchema({
     typeDefs,
-    resolvers: new GameResolvers(container.get(TYPES.GameService)).getResolvers(),
+    resolvers: [container.get<GameResolvers>(TYPES.GameResolvers).getResolvers()]
 });
 export default schema;

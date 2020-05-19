@@ -4,6 +4,7 @@ const TYPES = {
     GameService: Symbol.for("GameService"),
     IGraphqlResolver: Symbol.for("IGraphqlResolver"),
     Logger: Symbol.for("ILogger"),
+    GameResolvers: Symbol.for('GameResolvers')
 };
 
 export { TYPES };

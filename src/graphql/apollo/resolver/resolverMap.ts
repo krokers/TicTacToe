@@ -3,28 +3,21 @@ import {Game, GameConfigInput, GameTypes} from "../../resolvers/resolvers";
 import {HttpError} from "../../../utils/HttpError";
 import {keysAsString} from "../../../utils/TextUtils";
 import {IGameService} from "../../../services/game/IGameService";
+import {injectable, inject} from "inversify";
+import {TYPES} from "../../../di/types";
 
-
-// type ResolverFn = (parent: any, args: any, ctx: any) => any;
-// interface ResolverMap {
-//     [field: string]: ResolverFn;
-// }
-
-// export interface IGameMutation extends ResolverMap{
-//     createGame: (parent:any, {config}:{config:GameConfigInput}, ctx: any) => Promise<Game>;
-// }
-
+@injectable()
 class GameResolvers {
 
-    constructor(private gameService: IGameService) {
+    constructor(@inject(TYPES.GameService) private gameService: IGameService) {
     }
 
     getResolvers() {
 
         const resolverMap: IResolvers = {
             Query: {
-                helloWorld(_: void, args: void): string {
-                    return `Hello world!`;
+                helloWorld: (_: void, args: void): string =>{
+                    return `Hello world!` + this.gameService;
                 },
             },
             Mutation: {
