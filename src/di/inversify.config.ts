@@ -11,6 +11,8 @@ import {WinstonLogger} from "../utils/logger/WinstonLogger";
 import {IHistoryRepository} from "../data/history/IHistoryRepository";
 import {InMemoryHistoryRepository} from "../data/history/InMemoryHistoryRepository";
 import GameResolvers from "../graphql/apollo/resolver/resolverMap";
+import {IInputValidators} from "../services/validators/IInputValidators";
+import {InputValidators} from "../services/validators/InputValidators";
 
 const container = new Container();
 container.bind<IGameRepository>(TYPES.GameRepository).to(InMemoryGameRepository);
@@ -18,6 +20,7 @@ container.bind<IHistoryRepository>(TYPES.HistoryRepository).to(InMemoryHistoryRe
 container.bind<IGameService>(TYPES.GameService).to(GameService);
 container.bind<IGraphqlResolver>(TYPES.IGraphqlResolver).to(GraphqlResolver);
 container.bind<ILogger>(TYPES.Logger).to(WinstonLogger);
+container.bind<IInputValidators>(TYPES.InputValidators).to(InputValidators);
 
 container.bind<GameResolvers>(TYPES.GameResolvers).to(GameResolvers);
 
