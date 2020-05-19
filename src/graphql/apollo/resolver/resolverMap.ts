@@ -5,7 +5,7 @@ import {keysAsString} from "../../../utils/TextUtils";
 import {IGameService} from "../../../services/game/IGameService";
 import {injectable, inject} from "inversify";
 import {TYPES} from "../../../di/types";
-import { PubSub } from 'apollo-server-express';
+import { PubSub, withFilter } from 'apollo-server-express';
 import {ILogger} from "../../../utils/logger/ILogger";
 import {IInputValidators} from "../../../services/validators/IInputValidators";
 
@@ -38,7 +38,6 @@ class GameResolvers {
 
                     const gameData = await this.gameService.createGame(config.gameType);
                     this.log.v(`About to publish subscription event. pubsub: ${this.pubsub}`)
-                    await this.pubsub.publish(PLAYER_READY, { playerReady: "test" });
                     return Promise.resolve(Game.from(gameData));
                 },
                 setReady: async (parent: any, {setReady}: { setReady: SetReadyInput }) => {
@@ -46,14 +45,17 @@ class GameResolvers {
                     this.log.v("Setting player %s ready for game %s", setReady.player, setReady.gameId);
                     const gameData = await this.gameService.setPlayerReady(setReady.gameId, setReady.player);
                     const game = Game.from(gameData);
-                    await this.pubsub.publish(GAME_UPDATED_TOPIC, {gameUpdated: game})
+                    await this.pubsub.publish(PLAYER_READY, {playerReady: game});
                     return game;
                 }
 
             },
             Subscription: {
                 playerReady: {
-                    subscribe: () => this.pubsub.asyncIterator([PLAYER_READY]),
+                    subscribe: withFilter(
+                        (gameId:string) => this.pubsub.asyncIterator([PLAYER_READY]),
+                        ({playerReady}:{playerReady:Game}, {gameId}:{gameId:string}) => playerReady._id === gameId
+                    )
                 }
             }
         };

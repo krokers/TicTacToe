@@ -13,8 +13,7 @@ type Mutation {
 }
 
 type Subscription {
-    playerReady: String!
-#    playerReady(value: String!): Game!
+    playerReady(gameId: String!): Game!
 }
 
 type Game {
