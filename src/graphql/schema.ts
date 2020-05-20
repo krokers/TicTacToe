@@ -33,9 +33,14 @@ const schema = buildSchema(`
         getGames: [Game!]!
     }
     
+    type RootSubscription {
+        gameUpdated: Game
+    }
+    
     schema {
         query: RootQuery
         mutation: RootMutation
+        subscription: RootSubscription 
     }
     `);
 

@@ -1,5 +1,5 @@
 import {GameData} from "../../data/game/IGameRepository";
-import {PlayerTypes} from "../../graphql/resolvers/resolvers";
+import {PlayerTypes} from "../../graphql/apollo/data/data";
 
 export interface IGameService {
     createGame(gameType: string):Promise<GameData>;

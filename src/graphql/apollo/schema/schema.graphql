@@ -1,0 +1,44 @@
+type Query {
+    helloWorld: String!
+}
+
+enum GameStateEnum {
+    PLAYER_READY
+    PLAYER_MOVE
+    GAME_OVER
+}
+
+type GameStatusChanged {
+    statusChange:GameStateEnum!
+    game:Game!
+}
+
+input SetReadyInput {
+    gameId:String!
+    player:String!
+}
+
+input MoveInput {
+    gameId:String!
+    player:String!
+    position: Int!
+}
+
+type Mutation {
+    createGame (config: GameConfigInput!): Game!
+    setReady(setReady: SetReadyInput!): Game!
+    makeMove(move: MoveInput!): Game!
+}
+
+type Subscription {
+    gameStatusChanged(gameId: String!): GameStatusChanged!
+}
+
+type Game {
+    _id: ID!
+    gameType: String!
+}
+
+input GameConfigInput {
+    gameType: String!
+}

@@ -4,9 +4,9 @@ import {GameData, IGameRepository} from "../../data/game/IGameRepository";
 import {IGameService} from "./IGameService";
 import {TYPES} from "../../di/types";
 import {HttpError} from "../../utils/HttpError";
-import {PlayerTypes} from "../../graphql/resolvers/resolvers";
 import {ActionType, IHistoryRepository} from "../../data/history/IHistoryRepository";
 import {ILogger} from "../../utils/logger/ILogger";
+import {PlayerTypes} from "../../graphql/apollo/data/data";
 
 @injectable()
 export class GameService implements IGameService {
@@ -17,6 +17,7 @@ export class GameService implements IGameService {
 
     async createGame(gameType: string): Promise<GameData> {
         const game = await this.gameRepository.create(gameType);
+        this.log.v(`Creating new ${gameType} game.`);
         this.historyRepository.addEntry(ActionType.GameCreated, game._id, "New Game Created");
         return game;
     }

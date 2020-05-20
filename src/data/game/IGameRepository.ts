@@ -1,4 +1,4 @@
-import {PlayerTypes} from "../../graphql/resolvers/resolvers";
+import {PlayerTypes} from "../../graphql/apollo/data/data";
 
 export class GameData {
     selections: Array<string> = ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'];
@@ -7,6 +7,7 @@ export class GameData {
     ended: boolean = false;
     nextPlayer:PlayerTypes = PlayerTypes.PLAYER_NONE;
     winner: PlayerTypes = PlayerTypes.PLAYER_NONE;
+    host: PlayerTypes = PlayerTypes.PLAYER_X;
 
     constructor(public _id: string, public gameType: string) {
     }
