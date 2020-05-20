@@ -11,6 +11,8 @@ import {InMemoryHistoryRepository} from "../data/history/InMemoryHistoryReposito
 import GameResolvers from "../graphql/apollo/resolver/resolverMap";
 import {IInputValidators} from "../services/validators/IInputValidators";
 import {InputValidators} from "../services/validators/InputValidators";
+import {ISubscriptionsService} from "../services/subscriptions/ISubscriptionService";
+import {ApolloSubscriptionsService} from "../services/subscriptions/ApolloSubscriptionsService";
 
 const container = new Container();
 container.bind<IGameRepository>(TYPES.GameRepository).to(InMemoryGameRepository);
@@ -20,5 +22,6 @@ container.bind<ILogger>(TYPES.Logger).to(WinstonLogger);
 container.bind<IInputValidators>(TYPES.InputValidators).to(InputValidators);
 
 container.bind<GameResolvers>(TYPES.GameResolvers).to(GameResolvers);
+container.bind<ISubscriptionsService>(TYPES.SubscriptionsService).to(ApolloSubscriptionsService)
 
 export { container };

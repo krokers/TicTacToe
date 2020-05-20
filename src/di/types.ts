@@ -6,6 +6,8 @@ const TYPES = {
     Logger: Symbol.for("ILogger"),
     GameResolvers: Symbol.for('GameResolvers'),
     InputValidators: Symbol.for('InputValidators'),
+    SubscriptionsService: Symbol.for('SubscriptionsService')
+
 };
 
 export { TYPES };

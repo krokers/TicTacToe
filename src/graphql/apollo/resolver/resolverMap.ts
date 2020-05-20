@@ -4,28 +4,28 @@ import {keysAsString} from "../../../utils/TextUtils";
 import {IGameService} from "../../../services/game/IGameService";
 import {inject, injectable} from "inversify";
 import {TYPES} from "../../../di/types";
-import {PubSub, withFilter} from 'apollo-server-express';
+import {withFilter} from 'apollo-server-express';
 import {ILogger} from "../../../utils/logger/ILogger";
 import {IInputValidators} from "../../../services/validators/IInputValidators";
 import {
     Game,
     GameConfigInput,
     GameStatus,
-    GameStatusChange, GameStatusChangePayload,
+    GameStatusChangePayload,
     GameTypes,
     MoveInput,
     SetReadyInput,
     SUBSCRIPTION_GAME_STATUS_CHANGED,
 } from "../data/data";
+import {ISubscriptionsService} from "../../../services/subscriptions/ISubscriptionService";
 
 @injectable()
 class GameResolvers {
-    pubsub: PubSub;
 
     constructor(@inject(TYPES.GameService) private gameService: IGameService,
                 @inject(TYPES.Logger) private log: ILogger,
-                @inject(TYPES.InputValidators) private inputValidators: IInputValidators) {
-        this.pubsub = new PubSub(); // TODO Inject
+                @inject(TYPES.InputValidators) private inputValidators: IInputValidators,
+                @inject(TYPES.SubscriptionsService) private subscriptionsService: ISubscriptionsService) {
     }
 
     getResolvers() {
@@ -52,7 +52,7 @@ class GameResolvers {
                     this.log.v("Setting player %s ready for game %s", setReady.player, setReady.gameId);
                     const gameData = await this.gameService.setPlayerReady(setReady.gameId, setReady.player);
                     const game = Game.from(gameData);
-                    await this.pubsub.publish(SUBSCRIPTION_GAME_STATUS_CHANGED, new GameStatusChangePayload( new GameStatusChange(game, GameStatus.PLAYER_READY)));
+                    await this.subscriptionsService.gameStatusChanged(game, GameStatus.PLAYER_READY)
                     return game;
                 },
 
@@ -68,7 +68,7 @@ class GameResolvers {
             Subscription: {
                 gameStatusChanged: {
                     subscribe: withFilter(
-                        (gameId: string) => this.pubsub.asyncIterator([SUBSCRIPTION_GAME_STATUS_CHANGED]),
+                        (gameId: string) => this.subscriptionsService.pubsub.asyncIterator([SUBSCRIPTION_GAME_STATUS_CHANGED]),
                         (payload: GameStatusChangePayload, {gameId}: { gameId: string }) => payload.gameStatusChanged.game._id === gameId
                     )
                 }
