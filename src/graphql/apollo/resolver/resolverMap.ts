@@ -10,11 +10,12 @@ import {IInputValidators} from "../../../services/validators/IInputValidators";
 import {
     Game,
     GameConfigInput,
+    GameStatus,
+    GameStatusChange, GameStatusChangePayload,
     GameTypes,
     MoveInput,
     SetReadyInput,
-    SUBSCRIPTION_PLAYER_READY,
-    SubscriptionType
+    SUBSCRIPTION_GAME_STATUS_CHANGED,
 } from "../data/data";
 
 @injectable()
@@ -51,7 +52,7 @@ class GameResolvers {
                     this.log.v("Setting player %s ready for game %s", setReady.player, setReady.gameId);
                     const gameData = await this.gameService.setPlayerReady(setReady.gameId, setReady.player);
                     const game = Game.from(gameData);
-                    await this.pubsub.publish(SUBSCRIPTION_PLAYER_READY, {playerReady: game});
+                    await this.pubsub.publish(SUBSCRIPTION_GAME_STATUS_CHANGED, new GameStatusChangePayload( new GameStatusChange(game, GameStatus.PLAYER_READY)));
                     return game;
                 },
 
@@ -65,10 +66,10 @@ class GameResolvers {
 
             },
             Subscription: {
-                playerReady: {
+                gameStatusChanged: {
                     subscribe: withFilter(
-                        (gameId: string) => this.pubsub.asyncIterator([SUBSCRIPTION_PLAYER_READY]),
-                        ({playerReady}: { playerReady: Game }, {gameId}: { gameId: string }) => playerReady._id === gameId
+                        (gameId: string) => this.pubsub.asyncIterator([SUBSCRIPTION_GAME_STATUS_CHANGED]),
+                        (payload: GameStatusChangePayload, {gameId}: { gameId: string }) => payload.gameStatusChanged.game._id === gameId
                     )
                 }
             }

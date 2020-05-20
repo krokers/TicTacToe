@@ -5,8 +5,23 @@ export enum GameTypes {
     MULTI_PLAYER = 'multiplayer',
 }
 
-export const SUBSCRIPTION_PLAYER_READY = 'PLAYER_READY';
-export const SUBSCRIPTION_PLAYER_MOVE = 'PLAYER_MOVE';
+export enum GameStatus {
+    PLAYER_READY = "PLAYER_READY",
+    PLAYER_MOVE = "PLAYER_MOVE",
+    GAME_OVER = "GAME_OVER",
+}
+
+export class GameStatusChange {
+    constructor(public game: Game, public statusChange: GameStatus) {
+    }
+}
+
+export class GameStatusChangePayload {
+    constructor(public gameStatusChanged: GameStatusChange) {
+    }
+}
+
+export const SUBSCRIPTION_GAME_STATUS_CHANGED = 'SUBSCRIPTION_GAME_STATUS_CHANGED';
 
 export enum PlayerTypes {
     PLAYER_X = 'X',
