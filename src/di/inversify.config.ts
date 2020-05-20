@@ -13,6 +13,7 @@ import {IInputValidators} from "../services/validators/IInputValidators";
 import {InputValidators} from "../services/validators/InputValidators";
 import {ISubscriptionsService} from "../services/subscriptions/ISubscriptionService";
 import {ApolloSubscriptionsService} from "../services/subscriptions/ApolloSubscriptionsService";
+import {ServerConfig} from "../config/ServerConfig";
 
 const container = new Container();
 container.bind<IGameRepository>(TYPES.GameRepository).to(InMemoryGameRepository);
@@ -23,5 +24,7 @@ container.bind<IInputValidators>(TYPES.InputValidators).to(InputValidators);
 
 container.bind<GameResolvers>(TYPES.GameResolvers).to(GameResolvers);
 container.bind<ISubscriptionsService>(TYPES.SubscriptionsService).to(ApolloSubscriptionsService)
+
+container.bind<ServerConfig>(TYPES.ServerConfig).to(ServerConfig)
 
 export { container };
