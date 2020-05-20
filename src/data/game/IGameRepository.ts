@@ -7,6 +7,7 @@ export class GameData {
     ended: boolean = false;
     nextPlayer:PlayerTypes = PlayerTypes.PLAYER_NONE;
     winner: PlayerTypes = PlayerTypes.PLAYER_NONE;
+    host: PlayerTypes = PlayerTypes.PLAYER_X;
 
     constructor(public _id: string, public gameType: string) {
     }
