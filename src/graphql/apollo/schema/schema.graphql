@@ -37,6 +37,12 @@ type Subscription {
 type Game {
     _id: ID!
     gameType: String!
+    ended: Boolean!
+    winner: String!
+    nextPlayer: String!
+    playerXReady: Boolean!
+    playerOReady: Boolean!
+    selections: [String!]
 }
 
 input GameConfigInput {

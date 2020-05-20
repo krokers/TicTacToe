@@ -47,11 +47,21 @@ export interface MoveInput {
 
 export class Game {
 
-    constructor(public _id: string, public gameType: string) {
+    constructor(public _id: string,
+                public gameType: GameTypes,
+                public ended: boolean,
+                public winner: PlayerTypes,
+                public nextPlayer: PlayerTypes,
+                public playerXReady: boolean,
+                public playerOReady: boolean,
+                public selections: Array<PlayerTypes>) {
     }
 
     static from(gameData: GameData): Game {
-        return new Game(gameData._id, gameData.gameType);
+        return new Game(gameData._id, gameData.gameType,
+            gameData.ended, gameData.winner, gameData.nextPlayer,
+            gameData.playerXReady, gameData.playerOReady,
+            gameData.selections);
     }
 }
 
