@@ -1,9 +1,10 @@
-import {GameData, IGameRepository} from "../../data/game/IGameRepository";
+import {GameData} from "../../data/game/IGameRepository";
 import {PlayerTypes} from "../../graphql/apollo/data/data";
 import {ActionType, IHistoryRepository} from "../../data/history/IHistoryRepository";
 import {inject, injectable} from "inversify";
 import {TYPES} from "../../di/types";
 import {ILogger} from "../../utils/logger/ILogger";
+import "reflect-metadata"
 
 @injectable()
 export class GameOverService {
@@ -13,16 +14,19 @@ export class GameOverService {
     }
 
     checkGameEnded(game: GameData): GameData {
+
+        const hasEmptySpot =  game.selections
+            .reduce( (hasEmpty, playerAtPosition) => hasEmpty || playerAtPosition === PlayerTypes.PLAYER_NONE, false);
+
         const winner: PlayerTypes = this.checkWinner(game);
+
         if (winner !== PlayerTypes.PLAYER_NONE) {
             game.ended = true;
             game.winner = winner;
             const message = `Player ${winner} won!`
             this.log.v(message);
             this.historyRepository.addEntry(ActionType.SelectedFirstPlayer, game._id, message, winner );
-        } else if (game.selections
-            .reduce((hasEmpty, playerAtPosition) => hasEmpty || playerAtPosition !== PlayerTypes.PLAYER_NONE), false) {
-            //all fields occupied
+        } else if( !hasEmptySpot ) {
             game.ended = true;
             const message = `Game ended. No winner!`
             this.log.v(message);

@@ -3,7 +3,7 @@ import {createLogger, format, Logger, transports} from 'winston'
 import {injectable} from "inversify";
 
 @injectable()
-export class WinstonLogger implements ILogger{
+export default class WinstonLogger implements ILogger{
     private logger: Logger;
 
     constructor() {
