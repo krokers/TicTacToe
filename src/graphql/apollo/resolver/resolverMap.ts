@@ -4,18 +4,15 @@ import {keysAsString} from "../../../utils/TextUtils";
 import {IGameService} from "../../../services/game/IGameService";
 import {inject, injectable} from "inversify";
 import {TYPES} from "../../../di/types";
-import {withFilter} from 'apollo-server-express';
 import {ILogger} from "../../../utils/logger/ILogger";
 import {IInputValidators} from "../../../services/validators/IInputValidators";
 import {
     Game,
     GameConfigInput,
     GameStatus,
-    GameStatusChangePayload,
     GameTypes,
     MoveInput,
     SetReadyInput,
-    SUBSCRIPTION_GAME_STATUS_CHANGED,
 } from "../data/data";
 import {ISubscriptionsService} from "../../../services/subscriptions/ISubscriptionService";
 
@@ -67,10 +64,7 @@ class GameResolvers {
             },
             Subscription: {
                 gameStatusChanged: {
-                    subscribe: withFilter(
-                        (gameId: string) => this.subscriptionsService.pubsub.asyncIterator([SUBSCRIPTION_GAME_STATUS_CHANGED]),
-                        (payload: GameStatusChangePayload, {gameId}: { gameId: string }) => payload.gameStatusChanged.game._id === gameId
-                    )
+                    subscribe: this.subscriptionsService.subscribe(),
                 }
             }
         };

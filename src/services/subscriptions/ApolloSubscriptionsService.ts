@@ -24,5 +24,11 @@ export class ApolloSubscriptionsService implements ISubscriptionsService {
             new GameStatusChangePayload(new GameStatusChange(game, GameStatus.PLAYER_READY)));
     }
 
+    subscribe(): ResolverFn {
+        return withFilter(
+            (gameId: string) => this.pubsub.asyncIterator([SUBSCRIPTION_GAME_STATUS_CHANGED]),
+            (payload: GameStatusChangePayload, {gameId}: { gameId: string }) => payload.gameStatusChanged.game._id === gameId
+        )
+    }
 
 }
