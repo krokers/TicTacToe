@@ -14,11 +14,14 @@ import {InputValidators} from "../services/validators/InputValidators";
 import {ISubscriptionsService} from "../services/subscriptions/ISubscriptionService";
 import {ApolloSubscriptionsService} from "../services/subscriptions/ApolloSubscriptionsService";
 import {ServerConfig} from "../config/ServerConfig";
+import {IGameOverService} from "../services/game/IGameOverService";
+import {GameOverService} from "../services/game/GameOverService";
 
 const container = new Container();
 container.bind<IGameRepository>(TYPES.GameRepository).to(InMemoryGameRepository);
-container.bind<IHistoryRepository>(TYPES.HistoryRepository).to(InMemoryHistoryRepository)
+container.bind<IHistoryRepository>(TYPES.HistoryRepository).to(InMemoryHistoryRepository);
 container.bind<IGameService>(TYPES.GameService).to(GameService);
+container.bind<IGameOverService>(TYPES.GameOverService).to(GameOverService);
 container.bind<ILogger>(TYPES.Logger).to(WinstonLogger);
 container.bind<IInputValidators>(TYPES.InputValidators).to(InputValidators);
 
