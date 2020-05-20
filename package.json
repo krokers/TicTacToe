@@ -12,7 +12,10 @@
   "license": "ISC",
   "devDependencies": {
     "@types/graphql": "^14.5.0",
+    "@types/jest": "^25.2.3",
+    "jest": "^26.0.1",
     "nodemon": "^2.0.4",
+    "ts-jest": "^26.0.0",
     "ts-node": "^8.10.1",
     "typescript": "^3.9.2"
   },
