@@ -1,7 +1,9 @@
-import {PlayerTypes} from "../../graphql/apollo/data/data";
+import {GameTypes, PlayerTypes} from "../../graphql/apollo/data/data";
 
 export class GameData {
-    selections: Array<string> = ['E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'];
+    selections: Array<PlayerTypes> = [PlayerTypes.PLAYER_NONE, PlayerTypes.PLAYER_NONE, PlayerTypes.PLAYER_NONE,
+        PlayerTypes.PLAYER_NONE, PlayerTypes.PLAYER_NONE, PlayerTypes.PLAYER_NONE,
+        PlayerTypes.PLAYER_NONE, PlayerTypes.PLAYER_NONE, PlayerTypes.PLAYER_NONE];
     playerXReady: boolean = false;
     playerOReady: boolean = false;
     ended: boolean = false;
@@ -9,7 +11,7 @@ export class GameData {
     winner: PlayerTypes = PlayerTypes.PLAYER_NONE;
     host: PlayerTypes = PlayerTypes.PLAYER_X;
 
-    constructor(public _id: string, public gameType: string) {
+    constructor(public _id: string, public gameType: GameTypes) {
     }
 }
 

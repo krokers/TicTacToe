@@ -40,7 +40,8 @@ class GameResolvers {
                  are ${keysAsString(GameTypes, ', ')}`, 422);
                     }
 
-                    const gameData = await this.gameService.createGame(config.gameType);
+                    let gameData = await this.gameService.createGame(config.gameType);
+                    gameData = await this.gameService.makeComputerMoveIfApplicable(gameData)
                     return Promise.resolve(Game.from(gameData));
                 },
 
@@ -58,7 +59,11 @@ class GameResolvers {
                     this.inputValidators.validatePosition(move.position);
                     this.log.v(`Making move. Player: ${move.player} position: ${move.position} gameId: ${move.gameId}`)
                     //todo: add subscription!
-                    return this.gameService.makeMove(move.gameId, move.player, move.position);
+                    let updatedGame = await this.gameService.makeMove(move.gameId, move.player, move.position);
+                    //todo check winner
+                    updatedGame = await this.gameService.makeComputerMoveIfApplicable(updatedGame);
+                    //todo check winner
+                    return Promise.resolve(Game.from(updatedGame));
                 }
 
             },

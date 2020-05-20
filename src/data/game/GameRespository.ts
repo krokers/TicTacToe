@@ -1,13 +1,13 @@
 import {injectable} from "inversify";
 import "reflect-metadata";
 import {GameData, IGameRepository} from "./IGameRepository";
-import {v4 as uuid} from 'uuid'
+import {GameTypes} from "../../graphql/apollo/data/data";
 
 @injectable()
 class InMemoryGameRepository implements IGameRepository {
     games = new Map<string, GameData>()
 
-    create(type: string): Promise<GameData> {
+    create(type: GameTypes): Promise<GameData> {
         const game = new GameData(""+this.games.size, type);
         this.games.set(game._id, game);
         return Promise.resolve(game);

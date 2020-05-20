@@ -6,7 +6,7 @@ import {TYPES} from "../../di/types";
 import {HttpError} from "../../utils/HttpError";
 import {ActionType, IHistoryRepository} from "../../data/history/IHistoryRepository";
 import {ILogger} from "../../utils/logger/ILogger";
-import {PlayerTypes} from "../../graphql/apollo/data/data";
+import {GameTypes, PlayerTypes} from "../../graphql/apollo/data/data";
 
 @injectable()
 export class GameService implements IGameService {
@@ -15,11 +15,19 @@ export class GameService implements IGameService {
                 @inject(TYPES.Logger) private log: ILogger) {
     }
 
-    async createGame(gameType: string): Promise<GameData> {
+    async createGame(gameType: GameTypes): Promise<GameData> {
         const game = await this.gameRepository.create(gameType);
         this.log.v(`Creating new ${gameType} game.`);
         this.historyRepository.addEntry(ActionType.GameCreated, game._id, "New Game Created");
-        return game;
+
+        let updatedGame = game;
+        if (gameType === GameTypes.SINGLE_PLAYER) {
+            game.playerXReady = true;
+            game.playerOReady = true;
+            game.nextPlayer = Math.random() > 0.5 ? PlayerTypes.PLAYER_O : PlayerTypes.PLAYER_X;
+            updatedGame = await this.gameRepository.update(updatedGame);
+        }
+        return updatedGame;
     }
 
     async setPlayerReady(gameId: string, player: PlayerTypes): Promise<GameData> {
@@ -68,25 +76,63 @@ export class GameService implements IGameService {
         if (game.selections[position] !== PlayerTypes.PLAYER_NONE) {
             throw  new HttpError(`Position ${position} is already taken!`, 412);
         }
-        const nextPlayer = player === PlayerTypes.PLAYER_X ? PlayerTypes.PLAYER_O : PlayerTypes.PLAYER_X;
-        game.selections[position] = player;
-        game.nextPlayer = nextPlayer;
 
-        const winner: PlayerTypes = this.checkWinner(game)
+        if (game.ended) {
+            throw new HttpError('This game is already finished', 412);
+        }
+
+        let updatedGame = this.updateGameWithMove(game, player, position)
+        //TODO: check game over (all fields selected)
+        updatedGame = this.checkGameEnded(updatedGame);
+
+        const persistedGame = await this.gameRepository.update(updatedGame);
+        this.historyRepository.addEntry(ActionType.PlayerMove, persistedGame._id,
+            `Player ${player} made a check on position ${position}`, gameId, player, "" + position)
+        console.log("Selections state: ", updatedGame.selections, " next:", updatedGame.nextPlayer);
+        return Promise.resolve(persistedGame);
+    }
+
+    private updateGameWithMove(game: GameData, player: PlayerTypes, position: number): GameData {
+        const updatedGame = {...game};
+        const nextPlayer = player === PlayerTypes.PLAYER_X ? PlayerTypes.PLAYER_O : PlayerTypes.PLAYER_X;
+        updatedGame.selections[position] = player;
+        updatedGame.nextPlayer = nextPlayer;
+        this.log.v(`Player ${player} selects position ${position} picked next player: ${nextPlayer}` );
+
+        return updatedGame;
+    }
+
+    public async makeComputerMoveIfApplicable(game: GameData): Promise<GameData> {
+        //TODO check if gameover!
+        if (game.gameType === GameTypes.SINGLE_PLAYER && game.nextPlayer !== game.host) {
+            let position;
+            do {
+                position = Math.floor(Math.random() * 9);
+            } while (game.selections[position] !== PlayerTypes.PLAYER_NONE )
+
+            return this.makeMove(game._id, game.nextPlayer, position );
+        }
+        return Promise.resolve(game);
+    }
+
+    private checkGameEnded(game: GameData): GameData {
+        const winner: PlayerTypes = this.checkWinner(game);
         if (winner !== PlayerTypes.PLAYER_NONE) {
             game.ended = true;
             game.winner = winner;
             const message = `Player ${winner} won!`
             this.log.v(message);
             this.historyRepository.addEntry(ActionType.SelectedFirstPlayer, game._id, message, winner );
+        } else if (game.selections
+            .reduce((hasEmpty, playerAtPosition) => hasEmpty || playerAtPosition !== PlayerTypes.PLAYER_NONE), false) {
+            //all fields occupied
+            game.ended = true;
+            const message = `Game ended. No winner!`
+            this.log.v(message);
+            this.historyRepository.addEntry(ActionType.SelectedFirstPlayer, game._id, message, winner );
         }
 
-        //TODO: check game over (all fields selected)
-
-        const updatedGame = await this.gameRepository.update(game);
-        this.historyRepository.addEntry(ActionType.PlayerMove, updatedGame._id,
-            `Player ${player} made a check on position ${position}`, gameId, player, "" + position)
-        return Promise.resolve(updatedGame);
+        return game;
     }
 
     /**
@@ -97,8 +143,7 @@ export class GameService implements IGameService {
         this.log.v("Checking for winner: ", game.selections);
         const winner = Object.values(PlayerTypes)
             .filter(p => p !== PlayerTypes.PLAYER_NONE)
-            .reduce( (currentWinner, player) => {
-                const p = player.toString();
+            .reduce( (currentWinner, p) => {
                 if (
                     (game.selections[0] === p && game.selections[1] === p && game.selections[2] === p) ||
                     (game.selections[3] === p && game.selections[4] === p && game.selections[5] === p) ||
@@ -109,9 +154,9 @@ export class GameService implements IGameService {
                     (game.selections[0] === p && game.selections[4] === p && game.selections[8] === p) ||
                     (game.selections[2] === p && game.selections[4] === p && game.selections[6] === p)
                 ) {
-                    return player;
+                    return p;
                 }
-                return PlayerTypes.PLAYER_NONE;
+                return currentWinner;
             }, PlayerTypes.PLAYER_NONE)
         return winner;
     }

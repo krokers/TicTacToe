@@ -6,4 +6,5 @@ export interface IGameService {
     setPlayerReady(gameId: string, player:PlayerTypes):Promise<GameData>;
     getGames(): Promise<GameData[]>;
     makeMove(gameId: string, player:PlayerTypes, position: number):Promise<GameData>;
+    makeComputerMoveIfApplicable(game:GameData): Promise<GameData>
 }
