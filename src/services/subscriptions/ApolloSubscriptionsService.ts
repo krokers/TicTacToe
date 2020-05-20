@@ -21,7 +21,7 @@ export class ApolloSubscriptionsService implements ISubscriptionsService {
 
     async gameStatusChanged(game: Game, status: GameStatus): Promise<void> {
         await this.pubsub.publish(SUBSCRIPTION_GAME_STATUS_CHANGED,
-            new GameStatusChangePayload(new GameStatusChange(game, GameStatus.PLAYER_READY)));
+            new GameStatusChangePayload(new GameStatusChange(game, status)));
     }
 
     subscribe(): ResolverFn {

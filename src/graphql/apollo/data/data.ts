@@ -8,6 +8,7 @@ export enum GameTypes {
 export enum GameStatus {
     PLAYER_READY = "PLAYER_READY",
     PLAYER_MOVE = "PLAYER_MOVE",
+    COMPUTER_MOVE = "COMPUTER_MOVE",
     GAME_OVER = "GAME_OVER",
 }
 

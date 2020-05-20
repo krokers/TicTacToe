@@ -6,14 +6,7 @@ import {inject, injectable} from "inversify";
 import {TYPES} from "../../../di/types";
 import {ILogger} from "../../../utils/logger/ILogger";
 import {IInputValidators} from "../../../services/validators/IInputValidators";
-import {
-    Game,
-    GameConfigInput,
-    GameStatus,
-    GameTypes,
-    MoveInput,
-    SetReadyInput,
-} from "../data/data";
+import {Game, GameConfigInput, GameStatus, GameTypes, MoveInput, SetReadyInput,} from "../data/data";
 import {ISubscriptionsService} from "../../../services/subscriptions/ISubscriptionService";
 
 @injectable()
@@ -58,11 +51,24 @@ class GameResolvers {
                     this.inputValidators.validatePlayer(move.player);
                     this.inputValidators.validatePosition(move.position);
                     this.log.v(`Making move. Player: ${move.player} position: ${move.position} gameId: ${move.gameId}`)
-                    //todo: add subscription!
-                    let updatedGame = await this.gameService.makeMove(move.gameId, move.player, move.position);
-                    //todo check winner
-                    updatedGame = await this.gameService.makeComputerMoveIfApplicable(updatedGame);
-                    //todo check winner
+                    let updatedGame = await this.gameService.tryMarkPosition(move.gameId, move.player, move.position);
+
+                    await this.subscriptionsService.gameStatusChanged(updatedGame, GameStatus.PLAYER_MOVE);
+                    if (updatedGame.ended) {
+                        await this.subscriptionsService.gameStatusChanged(updatedGame, GameStatus.GAME_OVER);
+                        return Promise.resolve(Game.from(updatedGame));
+                    }
+
+                    if (updatedGame.gameType === GameTypes.SINGLE_PLAYER) {
+                        updatedGame = await this.gameService.makeComputerMoveIfApplicable(updatedGame);
+                        await this.subscriptionsService.gameStatusChanged(updatedGame, GameStatus.PLAYER_MOVE);
+
+                        if (updatedGame.ended) {
+                            await this.subscriptionsService.gameStatusChanged(updatedGame, GameStatus.GAME_OVER);
+                            return Promise.resolve(Game.from(updatedGame));
+                        }
+                    }
+
                     return Promise.resolve(Game.from(updatedGame));
                 }
 

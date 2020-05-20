@@ -61,7 +61,7 @@ export class GameService implements IGameService {
         return this.gameRepository.findAll();
     }
 
-    async makeMove(gameId: string, player: PlayerTypes, position: number): Promise<GameData> {
+    async tryMarkPosition(gameId: string, player: PlayerTypes, position: number): Promise<GameData> {
         const repoGame = await this.gameRepository.findById(gameId)
         if (!repoGame) {
             throw new HttpError(`Game with id '${gameId}' not found!`, 404)
@@ -83,7 +83,7 @@ export class GameService implements IGameService {
             throw new HttpError('This game is already finished', 412);
         }
 
-        let updatedGame = this.updateGameWithMove(game, player, position)
+        let updatedGame = this.markPosition(game, player, position)
 
         updatedGame = this.gameOverService.checkGameEnded(updatedGame);
 
@@ -94,7 +94,7 @@ export class GameService implements IGameService {
         return Promise.resolve(persistedGame);
     }
 
-    private updateGameWithMove(game: GameData, player: PlayerTypes, position: number): GameData {
+    private markPosition(game: GameData, player: PlayerTypes, position: number): GameData {
         const updatedGame = {...game};
         const nextPlayer = player === PlayerTypes.PLAYER_X ? PlayerTypes.PLAYER_O : PlayerTypes.PLAYER_X;
         updatedGame.selections[position] = player;
@@ -112,7 +112,7 @@ export class GameService implements IGameService {
                 position = Math.floor(Math.random() * 9);
             } while (game.selections[position] !== PlayerTypes.PLAYER_NONE )
 
-            return this.makeMove(game._id, game.nextPlayer, position );
+            return this.tryMarkPosition(game._id, game.nextPlayer, position );
         }
         return Promise.resolve(game);
     }

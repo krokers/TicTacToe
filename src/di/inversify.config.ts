@@ -5,7 +5,7 @@ import InMemoryGameRepository from "../data/game/GameRespository";
 import {IGameService} from "../services/game/IGameService";
 import {GameService} from "../services/game/GameService";
 import {ILogger} from "../utils/logger/ILogger";
-import {WinstonLogger} from "../utils/logger/WinstonLogger";
+import WinstonLogger from "../utils/logger/WinstonLogger";
 import {IHistoryRepository} from "../data/history/IHistoryRepository";
 import {InMemoryHistoryRepository} from "../data/history/InMemoryHistoryRepository";
 import GameResolvers from "../graphql/apollo/resolver/resolverMap";
