@@ -90,7 +90,6 @@ export class GameService implements IGameService {
         const persistedGame = await this.gameRepository.update(updatedGame);
         this.historyRepository.addEntry(ActionType.PlayerMove, persistedGame._id,
             `Player ${player} made a check on position ${position}`, gameId, player, "" + position)
-        console.log("Selections state: ", updatedGame.selections, " next:", updatedGame.nextPlayer);
         return Promise.resolve(persistedGame);
     }
 
@@ -99,7 +98,7 @@ export class GameService implements IGameService {
         const nextPlayer = player === PlayerTypes.PLAYER_X ? PlayerTypes.PLAYER_O : PlayerTypes.PLAYER_X;
         updatedGame.selections[position] = player;
         updatedGame.nextPlayer = nextPlayer;
-        this.log.v(`Player ${player} selects position ${position} picked next player: ${nextPlayer}` );
+        this.log.v(`Player ${player} selects position ${position}. Next player: ${nextPlayer}` );
 
         return updatedGame;
     }
