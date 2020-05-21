@@ -1,7 +1,7 @@
 import 'graphql-import-node';
 import * as typeDefs from './schema/schema.graphql';
 import { makeExecutableSchema } from 'graphql-tools';
-import GameResolvers from './resolver/resolverMap';
+import GameResolvers from './resolver/GameResolvers';
 import { GraphQLSchema } from 'graphql';
 import {container} from "../../di/inversify.config";
 import {TYPES} from "../../di/types";

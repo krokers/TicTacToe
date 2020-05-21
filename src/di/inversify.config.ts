@@ -8,7 +8,7 @@ import {ILogger} from "../utils/logger/ILogger";
 import WinstonLogger from "../utils/logger/WinstonLogger";
 import {IHistoryRepository} from "../data/history/IHistoryRepository";
 import {InMemoryHistoryRepository} from "../data/history/InMemoryHistoryRepository";
-import GameResolvers from "../graphql/apollo/resolver/resolverMap";
+import GameResolvers from "../graphql/apollo/resolver/GameResolvers";
 import {IInputValidators} from "../services/validators/IInputValidators";
 import {InputValidators} from "../services/validators/InputValidators";
 import {ISubscriptionsService} from "../services/subscriptions/ISubscriptionService";
