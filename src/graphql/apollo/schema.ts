@@ -5,9 +5,13 @@ import GameResolvers from './resolver/resolverMap';
 import { GraphQLSchema } from 'graphql';
 import {container} from "../../di/inversify.config";
 import {TYPES} from "../../di/types";
+import HistoryResolver from "./resolver/HistoryResolver";
 
 const schema: GraphQLSchema = makeExecutableSchema({
     typeDefs,
-    resolvers: [container.get<GameResolvers>(TYPES.GameResolvers).getResolvers()]
+    resolvers: [
+        container.get<GameResolvers>(TYPES.GameResolvers).getResolvers(),
+        container.get<HistoryResolver>(TYPES.HistoryResolvers).getResolvers(),
+    ]
 });
 export default schema;

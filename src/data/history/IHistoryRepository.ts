@@ -8,4 +8,6 @@ export enum ActionType {
 
 export interface IHistoryRepository {
     addEntry(action:ActionType, gameId:string, message:string, ...args:string[]):void ;
+
+    getEntries(gameId: string):Array<string> | undefined
 }

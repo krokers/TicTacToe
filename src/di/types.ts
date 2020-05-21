@@ -6,6 +6,7 @@ const TYPES = {
     IGraphqlResolver: Symbol.for("IGraphqlResolver"),
     Logger: Symbol.for("ILogger"),
     GameResolvers: Symbol.for('GameResolvers'),
+    HistoryResolvers: Symbol.for('HistoryResolvers'),
     InputValidators: Symbol.for('InputValidators'),
     SubscriptionsService: Symbol.for('SubscriptionsService'),
     ServerConfig: Symbol.for('ServerConfig'),

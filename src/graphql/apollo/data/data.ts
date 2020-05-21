@@ -22,7 +22,7 @@ export class GameStatusChangePayload {
     }
 }
 
-export const SUBSCRIPTION_GAME_STATUS_CHANGED = 'SUBSCRIPTION_GAME_STATUS_CHANGED';
+export const SUBSCRIPTION_GAME_STATUS_CHANGED = 'GAME_STATUS_CHANGED';
 
 export enum PlayerTypes {
     PLAYER_X = 'X',
@@ -64,5 +64,3 @@ export class Game {
             gameData.selections);
     }
 }
-
-export const GAME_UPDATED_TOPIC = 'gameUpdated';
