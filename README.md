@@ -14,18 +14,18 @@ ready to use GraphQL API. Perfect playground for front-end applications
 
 ### Installing
 
- 1. Install dependencies<br>
-<code>
-$npm install
-</code>
+ 1. Install dependencies
+    ```
+    $npm install
+    ```
  2. Run development server localy<br>
-<code>
-$npm run dev
-</code>
+    ```
+    $npm run dev
+    ```
  3. Now you should be able to open following URL via your browser<br>
-<code>
-http://localhost:3000/graphql
-</code>
+    ```
+    http://localhost:3000/graphql
+    ```
 
 ### Interacting with the API
 Game have two modes: <code>singleplayer</code> and <code>multiplayer</code>.
@@ -45,6 +45,10 @@ Below you can see a flows for both types.
 #### Subscriptions
 Game allows also to listen for updates via GraphQL subscriptions mechanism.
 You can register for events of selected game using <code>gameStatusChanged</code> subscription.
+
+#### Game History
+It is possible to check the history of existing game. In order to get the list of
+messages related to selected game use <code>gameHistory</code> query. 
 
 ## Running the tests
 
