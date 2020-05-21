@@ -53,7 +53,7 @@ export class GameService implements IGameService {
             this.historyRepository.addEntry(ActionType.SelectedFirstPlayer, gameId, message);
         }
         const updatedGame = await this.gameRepository.update(game);
-        this.historyRepository.addEntry(ActionType.PlayerSetReady, gameId, `Player ${player} is ready `, player);
+        this.historyRepository.addEntry(ActionType.PlayerSetReady, gameId, `Player ${player} is ready `);
         return updatedGame;
     }
 
@@ -89,7 +89,7 @@ export class GameService implements IGameService {
 
         const persistedGame = await this.gameRepository.update(updatedGame);
         this.historyRepository.addEntry(ActionType.PlayerMove, persistedGame._id,
-            `Player ${player} made a check on position ${position}`, gameId, player, "" + position)
+            `Player ${player} made a check on position ${position} in game ${gameId}`)
         return Promise.resolve(persistedGame);
     }
 

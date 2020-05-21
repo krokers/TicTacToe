@@ -11,7 +11,7 @@ export class InMemoryHistoryRepository implements IHistoryRepository{
     constructor(@inject(TYPES.Logger) private log: ILogger) {
     }
 
-    addEntry(action: ActionType, gameId:string, message: string, ...args: string[]): void {
+    addEntry(action: ActionType, gameId:string, message: string): void {
 
         if (!this.logs.has(gameId)) {
             this.logs.set(gameId, new Array<string>());
