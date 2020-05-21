@@ -1,6 +1,6 @@
 import 'ts-jest'
 import {GameOverService} from "../../../src/services/game/GameOverService";
-import {IHistoryRepository} from "../../../src/data/history/IHistoryRepository";
+import {ActionType, IHistoryRepository} from "../../../src/data/history/IHistoryRepository";
 import {ILogger} from "../../../src/utils/logger/ILogger";
 import {GameData} from "../../../src/data/game/IGameRepository";
 import {GameTypes, PlayerTypes} from "../../../src/graphql/apollo/data/data";
@@ -9,21 +9,27 @@ import {GameTypes, PlayerTypes} from "../../../src/graphql/apollo/data/data";
 describe('End game verification tests', function() {
 
     let instance: GameOverService;
+    const HistoryMock = jest.fn<IHistoryRepository,[]>( () => ({
+        addEntry: jest.fn(),
+        getEntries: jest.fn(),
+    }));
+
+    let historyMock = HistoryMock();
 
     beforeEach(() => {
+        HistoryMock.mockClear()
+        historyMock = HistoryMock();
         const LoggerMock = jest.fn<ILogger,[]>(() => ({
             v: jest.fn(),
             e: jest.fn(),
             i: jest.fn(),
         }) );
-        const HistoryMock = jest.fn<IHistoryRepository,[]>( () => ({
-            addEntry: jest.fn(),
-        }));
-        instance = new GameOverService(HistoryMock(), LoggerMock()  );
+
+        instance = new GameOverService(historyMock, LoggerMock()  );
     });
 
     it('Marks game as ended if 3 same items in a first row exist', function () {
-        const gameData = new GameData("", GameTypes.SINGLE_PLAYER);
+        const gameData = new GameData("MyID", GameTypes.SINGLE_PLAYER);
         gameData.selections = [
             PlayerTypes.PLAYER_X, PlayerTypes.PLAYER_X, PlayerTypes.PLAYER_X,
             PlayerTypes.PLAYER_NONE, PlayerTypes.PLAYER_NONE, PlayerTypes.PLAYER_NONE,
@@ -31,7 +37,8 @@ describe('End game verification tests', function() {
         ]
         const updatedGameData = instance.checkGameEnded(gameData)
 
-        expect(updatedGameData.winner).toBe(PlayerTypes.PLAYER_X);
+        expect(updatedGameData.winner).toBe(PlayerTypes.PLAYER_X)
+        expect(historyMock.addEntry).toBeCalledWith(ActionType.GameOver, "MyID", "Player X won!");
     });
 
     it('Marks game as ended if 3 same items in a second row exist', function () {

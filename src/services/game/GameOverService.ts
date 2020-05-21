@@ -26,12 +26,12 @@ export class GameOverService {
             game.winner = winner;
             const message = `Player ${winner} won!`
             this.log.v(message);
-            this.historyRepository.addEntry(ActionType.SelectedFirstPlayer, game._id, message);
+            this.historyRepository.addEntry(ActionType.GameOver, game._id, message);
         } else if (!hasEmptySpot) {
             game.ended = true;
             const message = `Game ended. No winner!`
             this.log.v(message);
-            this.historyRepository.addEntry(ActionType.SelectedFirstPlayer, game._id, message);
+            this.historyRepository.addEntry(ActionType.GameOver, game._id, message);
         }
         return game;
     }
