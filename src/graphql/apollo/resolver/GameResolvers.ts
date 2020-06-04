@@ -25,6 +25,12 @@ class GameResolvers {
                 helloWorld: (_: void, args: void): string => {
                     return `Hello world!` + this.gameService;
                 },
+                getGame: async (_: void, {gameId}: { gameId: string }) => {
+                    const game = await this.gameService.getGame(gameId);
+                    // this.log.v()
+                    console.log("Retrieving game:", game);
+                    return Game.from(game);
+                }
             },
             Mutation: {
                 createGame: async (parent: any, {config}: { config: GameConfigInput }) => {

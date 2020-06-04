@@ -32,6 +32,14 @@ export class GameService implements IGameService {
         return updatedGame;
     }
 
+    async getGame(gameId: string):Promise<GameData> {
+        const gameData = await this.gameRepository.findById(gameId);
+        if (!gameData) {
+            throw new HttpError(`Game with id '${gameId}' not found!`, 404)
+        }
+        return Promise.resolve(gameData);
+    }
+
     async setPlayerReady(gameId: string, player: PlayerTypes): Promise<GameData> {
         const game = await this.gameRepository.findById(gameId);
         if (!game) {

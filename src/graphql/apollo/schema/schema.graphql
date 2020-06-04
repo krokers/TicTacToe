@@ -1,6 +1,7 @@
 type Query {
     helloWorld: String!
     gameHistory(gameId:String!):[String!]
+    getGame(gameId:String!):Game!
 }
 
 enum GameStateEnum {
