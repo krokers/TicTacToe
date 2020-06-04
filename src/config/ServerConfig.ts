@@ -5,7 +5,6 @@ export class ServerConfig {
     PORT:string
 
     constructor() {
-        const envPort = process.env["TTT_PORT"];
-        this.PORT = envPort ? envPort : "3000";
+        this.PORT = process.env["TTT_PORT"] || "4000";
     }
 }
