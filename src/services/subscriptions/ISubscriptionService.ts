@@ -5,4 +5,7 @@ export interface ISubscriptionsService {
     pubsub: PubSub;
     gameStatusChanged(game: Game, status: GameStatus): Promise<void>;
     subscribe(): ResolverFn;
+
+    gameHistoryChanged(gameId: string, message: string): Promise<void>;
+    subscribeGameHistory(): ResolverFn;
 }

@@ -15,6 +15,11 @@ type GameStatusChanged {
     game:Game!
 }
 
+type GameHistoryChanged {
+    gameId:String!
+    message:String!
+}
+
 input SetReadyInput {
     gameId:String!
     player:String!
@@ -34,6 +39,7 @@ type Mutation {
 
 type Subscription {
     gameStatusChanged(gameId: String!): GameStatusChanged!
+    gameHistoryChanged(gameId: String!): GameHistoryChanged!
 }
 
 type Game {

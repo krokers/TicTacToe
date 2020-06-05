@@ -17,12 +17,23 @@ export class GameStatusChange {
     }
 }
 
+export class GameHistoryChange {
+    constructor(public gameId: string, public message: string) {
+    }
+}
+
 export class GameStatusChangePayload {
     constructor(public gameStatusChanged: GameStatusChange) {
     }
 }
 
+export class GameHistoryChangePayload {
+    constructor(public gameHistoryChanged: GameHistoryChange) {
+    }
+}
+
 export const SUBSCRIPTION_GAME_STATUS_CHANGED = 'GAME_STATUS_CHANGED';
+export const SUBSCRIPTION_GAME_HISTORY_CHANGED = 'GAME_HISTORY_CHANGED';
 
 export enum PlayerTypes {
     PLAYER_X = 'X',

@@ -6,15 +6,17 @@ import {TYPES} from "../../di/types";
 import {ILogger} from "../../utils/logger/ILogger";
 import "reflect-metadata"
 import {groupItems} from "../../utils/TextUtils";
+import {ISubscriptionsService} from "../subscriptions/ISubscriptionService";
 
 @injectable()
 export class GameOverService {
 
     constructor(@inject(TYPES.HistoryRepository) private historyRepository: IHistoryRepository,
-                @inject(TYPES.Logger) private log: ILogger) {
+                @inject(TYPES.Logger) private log: ILogger,
+                @inject(TYPES.SubscriptionsService) private subscriptionsService: ISubscriptionsService) {
     }
 
-    checkGameEnded(game: GameData): GameData {
+    async checkGameEnded(game: GameData): Promise<GameData> {
 
         const hasEmptySpot = game.selections
             .reduce((hasEmpty, playerAtPosition) => hasEmpty || playerAtPosition === PlayerTypes.PLAYER_NONE, false);
@@ -27,11 +29,13 @@ export class GameOverService {
             const message = `Player ${winner} won!`
             this.log.v(message);
             this.historyRepository.addEntry(ActionType.GameOver, game._id, message);
+            await this.subscriptionsService.gameHistoryChanged(game._id, message);
         } else if (!hasEmptySpot) {
             game.ended = true;
             const message = `Game ended. No winner!`
             this.log.v(message);
             this.historyRepository.addEntry(ActionType.GameOver, game._id, message);
+            await this.subscriptionsService.gameHistoryChanged(game._id, message);
         }
         return game;
     }

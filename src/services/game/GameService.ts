@@ -8,19 +8,23 @@ import {ActionType, IHistoryRepository} from "../../data/history/IHistoryReposit
 import {ILogger} from "../../utils/logger/ILogger";
 import {GameTypes, PlayerTypes} from "../../graphql/apollo/data/data";
 import {IGameOverService} from "./IGameOverService";
+import {ISubscriptionsService} from "../subscriptions/ISubscriptionService";
 
 @injectable()
 export class GameService implements IGameService {
     constructor(@inject(TYPES.GameRepository) private gameRepository: IGameRepository,
                 @inject(TYPES.HistoryRepository) private historyRepository: IHistoryRepository,
                 @inject(TYPES.Logger) private log: ILogger,
-                @inject(TYPES.GameOverService) private gameOverService: IGameOverService) {
+                @inject(TYPES.GameOverService) private gameOverService: IGameOverService,
+                @inject(TYPES.SubscriptionsService) private subscriptionsService: ISubscriptionsService) {
     }
 
     async createGame(gameType: GameTypes): Promise<GameData> {
         const game = await this.gameRepository.create(gameType);
         this.log.v(`Creating new ${gameType} game.`);
-        this.historyRepository.addEntry(ActionType.GameCreated, game._id, "New Game Created");
+        const message = `New Game Created. Type: ${gameType}, gameId: ${game._id}`;
+        this.historyRepository.addEntry(ActionType.GameCreated, game._id, message);
+        await this.subscriptionsService.gameHistoryChanged(game._id, message);
 
         let updatedGame = game;
         if (gameType === GameTypes.SINGLE_PLAYER) {
@@ -59,9 +63,12 @@ export class GameService implements IGameService {
             const message = `Player ${game.nextPlayer} is picked as first player`;
             this.log.v(message);
             this.historyRepository.addEntry(ActionType.SelectedFirstPlayer, gameId, message);
+            await this.subscriptionsService.gameHistoryChanged(game._id, message);
         }
         const updatedGame = await this.gameRepository.update(game);
-        this.historyRepository.addEntry(ActionType.PlayerSetReady, gameId, `Player ${player} is ready `);
+        const message = `Player ${player} is ready`;
+        this.historyRepository.addEntry(ActionType.PlayerSetReady, gameId, message);
+        await this.subscriptionsService.gameHistoryChanged(game._id, message);
         return updatedGame;
     }
 
@@ -93,11 +100,13 @@ export class GameService implements IGameService {
 
         let updatedGame = this.markPosition(game, player, position)
 
-        updatedGame = this.gameOverService.checkGameEnded(updatedGame);
+        updatedGame = await this.gameOverService.checkGameEnded(updatedGame);
 
         const persistedGame = await this.gameRepository.update(updatedGame);
+        const message = `Player ${player} made a check on position ${position} in game ${gameId}`;
         this.historyRepository.addEntry(ActionType.PlayerMove, persistedGame._id,
-            `Player ${player} made a check on position ${position} in game ${gameId}`)
+            message)
+        await this.subscriptionsService.gameHistoryChanged(game._id, message);
         return Promise.resolve(persistedGame);
     }
 
